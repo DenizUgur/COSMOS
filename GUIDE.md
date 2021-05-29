@@ -1,0 +1,15 @@
+# Setting Up
+- git clone https://github.com/DenizUgur/COSMOS
+- cd COSMOS
+- git checkout development
+- git submodule update
+- pip3 install virtualenv
+- virtualenv venv
+- source venv/bin/activate
+- pip3 install -r requirements.txt
+- python3 -m spacy download en
+- python3 -m spacy download en_core_web_sm
+- cd detectron2 && patch -p1 < ../detectron2_changes/0001-detectron2-mod.patch && cd -
+- python3 -m pip install -e detectron2
+- pip3 uninstall pycocotools
+- pip3 install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
