@@ -6,9 +6,9 @@ import tensorflow_hub as hub
 import torchvision.transforms as transforms
 
 # Data Directories
-BASE_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/'
-DATA_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/data/'
-TARGET_DIR = "/home/shivangi/Desktop/Data/Projects/cosmos/viz/"
+BASE_DIR = '/home/deniz/Desktop/Cheapfakes'
+DATA_DIR = f'{BASE_DIR}/data'
+TARGET_DIR = f'{BASE_DIR}/viz'
 
 # Word Embeddings
 embedding_length = 300

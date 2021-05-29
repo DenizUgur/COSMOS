@@ -10,3 +10,4 @@ __pycache__
 dataset_visualizer/static/train/*
 dataset_visualizer/static/val/*
 dataset_visualizer/static/test/*
+.vscode
