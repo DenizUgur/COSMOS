@@ -1,14 +1,15 @@
 """ Basic configuration and settings for training the model"""
 
+import os
 import torch
 from torch import nn
 import tensorflow_hub as hub
 import torchvision.transforms as transforms
 
 # Data Directories
-BASE_DIR = '/home/deniz/Desktop/Cheapfakes'
-DATA_DIR = f'{BASE_DIR}/data'
-TARGET_DIR = f'{BASE_DIR}/viz'
+BASE_DIR = os.getenv("COSMOS_BASE_DIR")
+DATA_DIR = os.getenv("COSMOS_DATA_DIR") or f'{BASE_DIR}/data'
+TARGET_DIR = os.getenv("COSMOS_TARGET_DIR") or f'{BASE_DIR}/viz'
 
 # Word Embeddings
 embedding_length = 300
