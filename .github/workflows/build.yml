@@ -43,9 +43,9 @@ jobs:
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
             --platform linux/amd64 \
             --output "type=image,push=true" \
-            --tag ghcr.io/denizugur/cosmos:latest \
+            --tag ghcr.io/denizugur/mmsys21cheapfakes:submission \
             --file ./Dockerfile ./
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ghcr.io/denizugur/cosmos:latest
+          docker buildx imagetools inspect ghcr.io/denizugur/mmsys21cheapfakes:submission
