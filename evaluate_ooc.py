@@ -94,7 +94,8 @@ def evaluate_context_with_bbox_overlap(v_data):
     bboxes = v_data['maskrcnn_bboxes']
     score_c1, score_c2 = get_scores(v_data)
     textual_sim = float(v_data['bert_base_score'])
-
+    scores_c1 = top_scores(score_c1)
+    scores_c2 = top_scores(score_c2)
     top_bbox_c1 = top_bbox_from_scores(bboxes, score_c1)
     top_bbox_c2 = top_bbox_from_scores(bboxes, score_c2)
     bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
@@ -105,10 +106,10 @@ def evaluate_context_with_bbox_overlap(v_data):
         # Check for captions with different context : Same grounding with low textual overlap (Out of context)
         else:
             context = 1
-        return context
+        return scores_c1, scores_c2, context
     else:
         # Check for captions with same context : Different grounding (Not out of context)
-        return 0
+        return scores_c1, scores_c2, 0
 
 
 if __name__ == "__main__":
@@ -121,10 +122,13 @@ if __name__ == "__main__":
     for i, v_data in enumerate(test_samples):
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
-        pred_context = evaluate_context_with_bbox_overlap(v_data)
-
+        scores_c1, scores_c2, pred_context = evaluate_context_with_bbox_overlap(v_data)
+        
         if pred_context == actual_context:
             ours_correct += 1
+            print("CORRECT:", pred_context, scores_c1, scores_c2)
+        else:
+            print("WRONG:", pred_context, scores_c1, scores_c2)
 
         if language_context == actual_context:
             lang_correct += 1

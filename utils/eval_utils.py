@@ -151,6 +151,17 @@ def top_bbox_from_scores(bboxes, scores):
     matched_bbox = sorted_bbox_scores[0][0]
     return matched_bbox
 
+def top_scores(scores):
+    """
+        Returns the sorted bounding box scores
+
+        Args:
+            scores (list): List of scores corresponding to bounding boxes
+
+        Returns:
+            scores: The sorted bounding box scores
+    """
+    return sorted(scores, reverse=True)    
 
 def is_bbox_overlap(bbox1, bbox2, iou_overlap_threshold):
     """
