@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-runtime-ubuntu18.04
+FROM nvidia/cuda:11.2.1-runtime-ubuntu20.04
 
 ENV COSMOS_BASE_DIR /opt/COSMOS_ws
 ENV COSMOS_DATA_DIR /mmsys21cheapfakes
