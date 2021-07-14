@@ -6,7 +6,7 @@ from utils.config import *
 from utils.text_utils import get_text_metadata
 from model_archs.models import CombinedModelMaskRCNN
 from utils.common_utils import read_json_data
-from utils.eval_utils import is_bbox_overlap, top_bbox_from_scores
+from utils.eval_utils import is_bbox_overlap, top_bbox_from_scores, top_scores
 
 
 # Word Embeddings
