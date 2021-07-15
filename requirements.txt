@@ -19,7 +19,7 @@ docutils==0.15.2
 spacy==2.1.9
 opencv_python==4.4.0.42
 pycocotools==2.0.0
-ipython==7.23.1
+ipython
 PyYAML==5.4.1
 recommonmark==0.7.1
 scikit_learn==0.24.2

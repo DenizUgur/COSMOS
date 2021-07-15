@@ -1,4 +1,11 @@
-FROM nvidia/cuda:11.2.1-runtime-ubuntu20.04
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
+
+# Setup Environment Variables
+ENV DEBIAN_FRONTEND="noninteractive" \
+    TZ="Europe/London"
+
+ENV COSMOS_BASE_DIR="/opt/COSMOS" \
+    COSMOS_DATA_DIR="/mmsys21cheapfakes"
 
 # Copy Dependencies
 COPY requirements.txt /
@@ -11,11 +18,19 @@ RUN mkdir -p /opt/COSMOS/models_final
 # Install Python
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3 python3-dev python3-pip build-essential git && \
+    software-properties-common && \
+    add-apt-repository -y ppa:deadsnakes/ppa && \
     rm -rf /var/lib/apt/lists/*
 
-# Prepare COSMOS
-RUN pip3 install cython numpy && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3.8 python3-dev python3-pip python3-opencv \
+    build-essential git && \
+    rm -rf /var/lib/apt/lists/*
+
+# Prepare Python Dependencies
+RUN python3 -m pip install --upgrade pip && \
+    pip3 install cython numpy setuptools && \
     pip3 install -r /requirements.txt
 
 # Patch and Install Detectron
@@ -33,10 +48,6 @@ RUN python3 -m spacy download en && \
 
 # Copy Source
 COPY . /opt/COSMOS
-
-# Setup Environment Variables
-ENV COSMOS_BASE_DIR /opt/COSMOS
-ENV COSMOS_DATA_DIR /mmsys21cheapfakes
 
 # Start the code
 ENTRYPOINT []
