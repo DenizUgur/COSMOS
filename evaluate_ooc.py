@@ -126,9 +126,9 @@ if __name__ == "__main__":
         
         if pred_context == actual_context:
             ours_correct += 1
-            print("CORRECT:", pred_context, scores_c1, scores_c2)
+            print("CORRECT:", pred_context, float(v_data['bert_base_score']) >= textual_sim_threshold, [float(i) for i in scores_c1], [float(i) for i in scores_c2])
         else:
-            print("WRONG:", pred_context, scores_c1, scores_c2)
+            print("WRONG:", pred_context, float(v_data['bert_base_score']) >= textual_sim_threshold, [float(i) for i in scores_c1], [float(i) for i in scores_c2])
 
         if language_context == actual_context:
             lang_correct += 1
