@@ -106,7 +106,7 @@ def evaluate_context_with_bbox_overlap(v_data):
        captions.find("genuine") != -1 or captions.find("fabricat") != -1 or captions.find("erroneous") != -1 or \
        captions.find("no evidence") != -1 or captions.find("satire") != -1 or \
        (v_data['caption1'].find("not") != -1 and v_data['caption2'].find("not") == -1) or \
-       (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1):
+       (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1)):
         context = 1
     else:
         if bbox_overlap:
