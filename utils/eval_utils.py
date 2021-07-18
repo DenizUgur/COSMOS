@@ -151,6 +151,8 @@ def top_bbox_from_scores(bboxes, scores):
     #matched_bbox = sorted_bbox_scores[0][0]
     matched_bbox_next = sorted_bbox_scores[1][0]
     if abs(sorted_bbox_scores[0][1] - sorted_bbox_scores[1][1]) / abs(sorted_bbox_scores[0][1]) < 0.01:
+    #replace above if with below if to disable rectangle optimization
+    #if False:
         matched_bbox = [0,0,0,0]
         matched_bbox[0] = min(sorted_bbox_scores[0][0][0], sorted_bbox_scores[1][0][0])
         matched_bbox[1] = min(sorted_bbox_scores[0][0][1], sorted_bbox_scores[1][0][1])
