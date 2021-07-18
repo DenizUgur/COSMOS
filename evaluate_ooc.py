@@ -102,11 +102,11 @@ def evaluate_context_with_bbox_overlap(v_data):
     bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
     captions = v_data['caption1'] + v_data['caption2']
     
-    if textual_sim >= textual_sim_threshold and (captions.find("hoax") != -1 or captions.find("fake") != -1 or captions.find("claim") != -1 or captions.find("actual") != -1 or \
+    if os.getenv("COSMOS_WORD_DISABLE") is None and (textual_sim >= textual_sim_threshold and (captions.find("hoax") != -1 or captions.find("fake") != -1 or captions.find("claim") != -1 or captions.find("actual") != -1 or \
        captions.find("genuine") != -1 or captions.find("fabricat") != -1 or captions.find("erroneous") != -1 or \
        captions.find("no evidence") != -1 or captions.find("satire") != -1 or \
        (v_data['caption1'].find("not") != -1 and v_data['caption2'].find("not") == -1) or \
-       (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1)):
+       (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1))):
         context = 1
     else:
         if bbox_overlap:
