@@ -107,9 +107,7 @@ def evaluate_context_with_bbox_overlap(v_data):
        captions.find("no evidence") != -1 or captions.find("satire") != -1) :
         context = 1
     else:
-        #if bbox_overlap:
-        #replace above line with this for second overlapping rectangle check
-        if bbox_overlap or (float(scores_c1[0]) - float(scores_c1[1]) < 0.01 and float(scores_c2[0]) - float(scores_c2[1]) < 0.05 and bbox_overlap_next):
+        if bbox_overlap:
             # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
             if textual_sim >= textual_sim_threshold:
                 context = 0
