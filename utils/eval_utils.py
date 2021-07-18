@@ -149,7 +149,8 @@ def top_bbox_from_scores(bboxes, scores):
     bbox_scores = [(bbox, score) for bbox, score in zip(bboxes, scores)]
     sorted_bbox_scores = sorted(bbox_scores, key=lambda x: x[1], reverse=True)
     matched_bbox = sorted_bbox_scores[0][0]
-    return matched_bbox
+    matched_bbox_next = sorted_bbox_scores[1][0]
+    return matched_bbox, matched_bbox_next
 
 def top_scores(scores):
     """
