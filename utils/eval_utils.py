@@ -150,8 +150,7 @@ def top_bbox_from_scores(bboxes, scores):
     sorted_bbox_scores = sorted(bbox_scores, key=lambda x: x[1], reverse=True)
     #matched_bbox = sorted_bbox_scores[0][0]
     matched_bbox_next = sorted_bbox_scores[1][0]
-    if sorted_bbox_scores[0][1] > 2.0 and sorted_bbox_scores[1][1] > 2.0 and \
-        abs(sorted_bbox_scores[0][1] - sorted_bbox_scores[1][1]) / sorted_bbox_scores[0][1] < 0.01:
+    if abs(sorted_bbox_scores[0][1] - sorted_bbox_scores[1][1]) / abs(sorted_bbox_scores[0][1]) < 0.01:
         matched_bbox = [0,0,0,0]
         matched_bbox[0] = min(sorted_bbox_scores[0][0][0], sorted_bbox_scores[1][0][0])
         matched_bbox[1] = min(sorted_bbox_scores[0][0][1], sorted_bbox_scores[1][0][1])
