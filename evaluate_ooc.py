@@ -103,7 +103,7 @@ def evaluate_context_with_bbox_overlap(v_data):
     captions = v_data['caption1'] + v_data['caption2']
     
     if textual_sim >= textual_sim_threshold and (captions.find("hoax") != -1 or captions.find("fake") != -1 or captions.find("claim") != -1 or captions.find("actual") != -1 or \
-       captions.find("genuine") != -1 or captions.find("fabricat") != -1 or captions.find("erroneous") != -1 or captions.find("did not") != -1 or \
+       captions.find("genuine") != -1 or captions.find("fabricat") != -1 or captions.find("erroneous") != -1 or \
        captions.find("no evidence") != -1 or captions.find("satire") != -1) :
         context = 1
     else:
