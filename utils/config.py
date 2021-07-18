@@ -43,5 +43,5 @@ num_boxes = 11  # Number of bounding boxes used in experiments, one additional b
 retrieve_gt_proposal_features = True    # Flag that controls whether to retrieve bounding box features from Mask RCNN backbone or not
 scoring = 'dot'  # Scoring function to combine image and text embeddings
 
-iou_overlap_threshold = 0.5
+iou_overlap_threshold = 0.25
 textual_sim_threshold = 0.5
