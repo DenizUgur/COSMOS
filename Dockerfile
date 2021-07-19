@@ -5,7 +5,9 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     TZ="Europe/London"
 
 ENV COSMOS_BASE_DIR="/opt/COSMOS" \
-    COSMOS_DATA_DIR="/mmsys21cheapfakes"
+    COSMOS_DATA_DIR="/mmsys21cheapfakes" \
+    COSMOS_IOU="0.25" \
+    COSMOS_RECT_OPTIM="1"
 
 # Copy Dependencies
 COPY requirements.txt /
