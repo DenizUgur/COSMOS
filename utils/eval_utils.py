@@ -149,10 +149,10 @@ def top_bbox_from_scores(bboxes, scores):
     """
     bbox_scores = [(bbox, score) for bbox, score in zip(bboxes, scores)]
     sorted_bbox_scores = sorted(bbox_scores, key=lambda x: x[1], reverse=True)
-    #matched_bbox = sorted_bbox_scores[0][0]
+    matched_bbox = sorted_bbox_scores[0][0]
     matched_bbox_next = sorted_bbox_scores[1][0]
     if abs(sorted_bbox_scores[0][1] - sorted_bbox_scores[1][1]) / abs(sorted_bbox_scores[0][1]) < 0.1 \
-       and matched_bbox[0] != 0 and matched_bbox[1] != 0 \   
+            and matched_bbox[0] != 0 and matched_bbox[1] != 0 \   
             and os.getenv("COSMOS_RECT_OPTIM"):
         matched_bbox = [0,0,0,0]
         matched_bbox[0] = min(sorted_bbox_scores[0][0][0], sorted_bbox_scores[1][0][0])
