@@ -109,7 +109,9 @@ def evaluate_context_with_bbox_overlap(v_data):
        (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1))):
         context = 1
     else:
-        if bbox_overlap and (os.getenv("COSMOS_RECT_OPTIM") is None or (float(scores_c1[0]) - float(scores_c1[1])) / abs(float(scores_c1[0])) > 0.1 or (float(scores_c2[0]) - float(scores_c2[1])) / abs(float(scores_c2[0])) > 0.1 or bbox_overlap_next):
+        if bbox_overlap and (os.getenv("COSMOS_RECT_OPTIM") is None or \
+           (float(scores_c1[0]) - float(scores_c1[1])) / abs(float(scores_c1[0])) > 0.05 or \
+           (float(scores_c2[0]) - float(scores_c2[1])) / abs(float(scores_c2[0])) > 0.05 or bbox_overlap_next):
             # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
             if textual_sim >= textual_sim_threshold:
                 context = 0
