@@ -101,11 +101,13 @@ def evaluate_context_with_bbox_overlap(v_data):
     bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
     bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
     captions = v_data['caption1'] + v_data['caption2']
+
+    # word_filter = ["falsification", "deflecting", "propaganda", "deflection", "deception", "contradicted", "defamation", "lie", "misleading", "victim", "deceit", "deceive", "fraud", "concocted", "bluffing", "made up", "double meaning", "alternative facts", "omission", "trick", "liar", "half-truth", "untruth", "pathological", "lies", "bad faith", "falsehoods", "evade", "compulsive", "lying", "inaccurate", "disinformation", "misconception"]
+    # word_filter = [f" {w} " for w in word_filter]
+    word_filter = ["hoax", "fake", "claim", "actual", "genuine", "fabric", "erroneous", "no evidence", "satire"]
     
-    if os.getenv("COSMOS_WORD_DISABLE") is None and (textual_sim >= textual_sim_threshold and (captions.find("hoax") != -1 or \
-       captions.find("fake") != -1 or captions.find("claim") != -1 or captions.find("actual") != -1 or \
-       captions.find("genuine") != -1 or captions.find("fabric") != -1 or captions.find("erroneous") != -1 or \
-       captions.find("no evidence") != -1 or captions.find("satire") != -1 or \
+    if os.getenv("COSMOS_WORD_DISABLE") is None and (textual_sim >= textual_sim_threshold and \
+       any(w in captions for w in word_filter or \
        (v_data['caption1'].find("not") != -1 and v_data['caption2'].find("not") == -1) or \
        (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1))):
         context = 1
