@@ -135,6 +135,21 @@ def bb_intersection_over_union(boxA, boxB):
     # return the intersection over union value
     return iou
 
+def top_bbox_from_scores_original(bboxes, scores):
+    """
+        Returns the top matching bounding box based on scores
+
+        Args:
+            bboxes (list): List of bounding boxes for each object
+            scores (list): List of scores corresponding to bounding boxes given by bboxes
+
+        Returns:
+            matched_bbox: The bounding box with the maximum score
+    """
+    bbox_scores = [(bbox, score) for bbox, score in zip(bboxes, scores)]
+    sorted_bbox_scores = sorted(bbox_scores, key=lambda x: x[1], reverse=True)
+    matched_bbox = sorted_bbox_scores[0][0]
+    return matched_bbox, sorted_bbox_scores
 
 def top_bbox_from_scores(bboxes, scores):
     """
