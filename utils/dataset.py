@@ -49,8 +49,11 @@ class CaptionInContext(Dataset):
             try:
                 img_aug, bboxes_aug = self.flip_rotate_transform(img, np.array(bboxes))
                 bboxes_aug = bboxes_aug.tolist()
-                bboxes = list(it.islice(it.cycle(bboxes_aug), num_boxes - 1))
-                img = img_aug
+                #bboxes = list(it.islice(it.cycle(bboxes_aug), num_boxes - 1))
+                #img = img_aug
+                if len(bboxes_aug) > 0:
+                    bboxes = list(it.islice(it.cycle(bboxes_aug), num_boxes - 1))
+                    img = img_aug                
             except:
                 pass
 
