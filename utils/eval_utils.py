@@ -39,7 +39,7 @@ def compute_score(z_img, z_text_match, z_text_diff):
             score_match (Tensor): Tensor of shape (N, K) holding score of matching caption with each object K in the image
             score_diff (Tensor): Tensor of shape (N, K) holding score of non-matching caption with each object K in the image
     """
-    z_img = z_img.permute(1, 0, 2)
+    #z_img = z_img.permute(1, 0, 2)
     # Compute Scores
     if scoring == 'dot':
         z_text_match = z_text_match.unsqueeze(2)
@@ -79,8 +79,8 @@ def margin_loss_text_combined(z_img, z_text_match, z_text_diff):
     """
     score_match, score_diff = compute_score(z_img, z_text_match, z_text_diff)
     # Rank Images
-    sum_match_img = torch.max(score_match, dim=1).values
-    sum_diff_img = torch.max(score_diff, dim=1).values
+    sum_match_img = score_match #torch.max(score_match, dim=1).values
+    sum_diff_img = score_diff #torch.max(score_diff, dim=1).values
     img_rank_loss = margin_rank_loss(sum_match_img, sum_diff_img, torch.ones(sum_match_img.shape[0]).to(device))
     return img_rank_loss
 
@@ -99,8 +99,8 @@ def get_match_vs_no_match_acc(z_img, z_text_match, z_text_diff):
     """
 
     score_match, score_diff = compute_score(z_img, z_text_match, z_text_diff)
-    max_match_img = torch.max(score_match, dim=1).values.unsqueeze(1)   # Computes the score of top object for matching caption
-    max_diff_img = torch.max(score_diff, dim=1).values.unsqueeze(1)  # Computes the score of top object for non-matching caption
+    max_match_img = score_match.unsqueeze(1) #torch.max(score_match, dim=1).values.unsqueeze(1)   # Computes the score of top object for matching caption
+    max_diff_img = score_diff.unsqueeze(1) #torch.max(score_diff, dim=1).values.unsqueeze(1)  # Computes the score of top object for non-matching caption
     combined = torch.cat((max_diff_img, max_match_img), dim=1)
     # If the score for matching caption is higher than non-matching caption, then the prediction is deemed correct
     correct = torch.sum(torch.max(combined, dim=1).indices)

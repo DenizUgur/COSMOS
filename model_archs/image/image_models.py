@@ -59,7 +59,7 @@ class ProcessMaskRCNNFeats(nn.Module):
         super(ProcessMaskRCNNFeats, self).__init__()
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc1 = nn.Linear(2048, 1024)
-        self.fc2 = nn.Linear(1024, 300)
+        self.fc2 = nn.Linear(1024, 100)
         self.relu = nn.ReLU()
 
     def forward(self, x):

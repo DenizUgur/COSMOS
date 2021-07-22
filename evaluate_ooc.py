@@ -16,11 +16,11 @@ text_field, word_embeddings, vocab_size = get_text_metadata()
 if embed_type == 'use':
     # For USE (Universal Sentence Embeddings)
     model_name = 'img_use_rcnn_margin_10boxes_jitter_rotate_aug_ner'
-    combined_model = CombinedModelMaskRCNN(hidden_size=300, use=True).to(device)
+    combined_model = CombinedModelMaskRCNN(hidden_size=1100, use=True).to(device)
 else:
     # For Glove and Fasttext Embeddings
     model_name = 'img_lstm_glove_rcnn_margin_10boxes_jitter_rotate_aug_ner'
-    combined_model = CombinedModelMaskRCNN(use=False, hidden_size=300, embedding_length=word_embeddings.shape[1]).to(device)
+    combined_model = CombinedModelMaskRCNN(use=False, hidden_size=1100, embedding_length=word_embeddings.shape[1]).to(device)
 
 
 def get_scores(v_data):

@@ -49,7 +49,8 @@ class CombinedModelMaskRCNN(nn.Module):
 
         """
         img = self.maskrcnn_extractor(img, bboxes, bbox_classes)
-        z_img = torch.stack([self.img_model(img[:, i, :, :, :].to(device)) for i in range(num_boxes)])
+        #z_img = torch.stack([self.img_model(img[:, i, :, :, :].to(device)) for i in range(num_boxes)])
+        z_img = torch.cat([self.img_model(img[:, i, :, :, :].to(device)) for i in range(num_boxes)], 1).unsqueeze(1)
         if self.use:
             z_text_match = self.text_model(text_match)
             z_text_diff = self.text_model(text_diff)

@@ -12,7 +12,7 @@ DATA_DIR = os.getenv("COSMOS_DATA_DIR") or f'{BASE_DIR}/data'
 TARGET_DIR = os.getenv("COSMOS_TARGET_DIR") or f'{BASE_DIR}/viz'
 
 # Word Embeddings
-embedding_length = 300
+embedding_length = 1100
 embed_type = 'use'  # glove, fasttext, use
 use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
