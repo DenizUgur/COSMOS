@@ -29,11 +29,11 @@ val_dataset = CaptionInContext(metadata_file=os.path.join(DATA_DIR, 'annotations
 test_dataset = CaptionInContext(metadata_file=os.path.join(DATA_DIR, 'annotations', 'test_data.json'),
                                transforms=img_transform, mode='test', text_field=text_field)
 
-train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, num_workers=4, shuffle=True,
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, num_workers=2, shuffle=True,
                           collate_fn=PadCollate())
-val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, num_workers=4, shuffle=False,
+val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, num_workers=2, shuffle=False,
                         collate_fn=PadCollate())
-test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, num_workers=4, shuffle=False,
+test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, num_workers=2, shuffle=False,
                         collate_fn=PadCollate())
 
 
