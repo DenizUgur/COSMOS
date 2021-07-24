@@ -19,7 +19,7 @@ use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
 # Hyperparameters
 patience = 10
-batch_size = 256
+batch_size = 128
 epochs = 500
 # Optimizers
 lr = 1e-3
