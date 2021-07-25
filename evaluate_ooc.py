@@ -146,6 +146,28 @@ def evaluate_context_with_bbox_overlap(v_data):
             context = 0
     return iou, scores_c1, scores_c2, context
 
+def logger(state, v_data, iou, bbox_scores):
+    level = os.getenv("COSMOS_COMPARE_LEVEL")
+    level = 0 if level is None else level
+
+    if level == 0:
+        print(state, v_data["img_local_path"])
+    elif level == 1:
+        print(state, \
+                v_data["img_local_path"], \
+                "is_fake", is_fake(v_data), \
+                "is_opposite", is_opposite(v_data))
+    elif level == 2:
+        print(state, \
+                v_data["img_local_path"], \
+                "is_fake", is_fake(v_data), \
+                "is_opposite", is_opposite(v_data), \
+                "bert", float(v_data['bert_base_score']), \
+                "iou", iou, \
+                "bbox", v_data['maskrcnn_bboxes'], \
+                "bbox_scores_c1", bbox_scores[0], \
+                "bbox_scores_c2", bbox_scores[1])
+
 if __name__ == "__main__":
     """ Main function to compute out-of-context detection accuracy"""
 
@@ -163,37 +185,13 @@ if __name__ == "__main__":
             pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
 
             if pred_context == actual_context and pred_context_original == actual_context:
-                print("BOTH CORRECT", \
-                    v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                logger("BOTH CORRECT", v_data, iou, bbox_scores)
             elif pred_context != actual_context and pred_context_original == actual_context:
-                print("ORIGINAL CORRECT", \
-                    v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores)
             elif pred_context == actual_context and pred_context_original != actual_context:
-                print("OURS CORRECT", \
-                    v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                logger("OURS CORRECT", v_data, iou, bbox_scores)
             else:
-                print("BOTH FALSE", \
-                    v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                logger("BOTH FALSE", v_data, iou, bbox_scores)
 
         if pred_context == actual_context:
             ours_correct += 1

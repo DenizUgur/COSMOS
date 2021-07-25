@@ -29,6 +29,9 @@ def process_text_embedding(text_match, text_diff):
     return text_match, text_diff
 
 def is_fake(v_data):
+    if os.getenv("COSMOS_DISABLE_ISFAKE") is not None:
+        return False
+
     sen = [
         "this news is fake.",
         v_data["caption1_modified"],
@@ -45,6 +48,9 @@ def is_fake(v_data):
     return any(c > 0.1 for c in cs)
 
 def is_opposite(v_data):
+    if os.getenv("COSMOS_DISABLE_ISOPPOSITE") is not None:
+        return False
+
     sen1 = [
         v_data["caption1_modified"] + " was true",
         v_data["caption1_modified"],
