@@ -27,3 +27,4 @@ scikit-image
 wordcloud==1.8.1
 mysql-connector-python==8.0.21
 Flask==1.1.2
+sentence-transformers==2.0.0

@@ -3,8 +3,11 @@
 """
 import os
 import torch
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 from utils.config import margin_rank_loss, device, scoring, embed_type, use_embed
 
+sen_model = SentenceTransformer('stsb-mpnet-base-v2')
 
 def process_text_embedding(text_match, text_diff):
     """
@@ -25,6 +28,49 @@ def process_text_embedding(text_match, text_diff):
     text_diff = text_diff.to(device)
     return text_match, text_diff
 
+def is_fake(v_data):
+    sen = [
+        "this news is fake.",
+        v_data["caption1_modified"],
+        v_data["caption2_modified"]
+    ]
+
+    #* Encoding
+    sentence_embeddings = sen_model.encode(sen)
+    cs = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]
+
+    return any(c > 0.1 for c in cs)
+
+def is_opposite(v_data):
+    sen1 = [
+        v_data["caption1_modified"] + " was true",
+        v_data["caption1_modified"],
+        v_data["caption2_modified"]
+    ]
+
+    sen2 = [
+        v_data["caption1_modified"] + " was not true",
+        v_data["caption1_modified"],
+        v_data["caption2_modified"]
+    ]
+
+    #* Encoding
+    sentence_embeddings = sen_model.encode(sen1)
+    cs1 = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]
+
+    sentence_embeddings = sen_model.encode(sen2)
+    cs2 = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]
+
+    return (cs1[0] > cs2[0] and cs1[1] < cs2[1]) or (cs1[0] < cs2[0] and cs1[1] > cs2[1])
 
 def compute_score(z_img, z_text_match, z_text_diff):
     """
