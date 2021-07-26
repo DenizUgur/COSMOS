@@ -23,6 +23,8 @@ else:
     model_name = 'img_lstm_glove_rcnn_margin_10boxes_jitter_rotate_aug_ner'
     combined_model = CombinedModelMaskRCNN(use=False, hidden_size=300, embedding_length=word_embeddings.shape[1]).to(device)
 
+print("Total Params", sum(p.numel() for p in combined_model.parameters() if p.requires_grad))
+
 
 def get_scores(v_data):
     """

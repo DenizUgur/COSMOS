@@ -7,8 +7,9 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from utils.config import margin_rank_loss, device, scoring, embed_type, use_embed
 
-#sen_model = SentenceTransformer('stsb-mpnet-base-v2')
-sen_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+sen_model = SentenceTransformer('stsb-mpnet-base-v2')
+
+print("Total SBERT Params", sum(p.numel() for p in sen_model.parameters() if p.requires_grad))
 
 def process_text_embedding(text_match, text_diff):
     """
