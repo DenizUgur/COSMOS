@@ -129,18 +129,9 @@ def evaluate_context_with_bbox_overlap(v_data):
     bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
     bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
     iou = bb_intersection_over_union(top_bbox_c1, top_bbox_c2)
-    fakescores = []
-    oppscores = []
-    #if os.getenv("COSMOS_WORD_DISABLE") is None and \
-    #    (textual_sim > 0.5 and (is_fake(v_data) or is_opposite(v_data))):
-    #    context = 1
-    if os.getenv("COSMOS_WORD_DISABLE") is None and textual_sim > textual_sim_threshold:
-        isfake, fakescores = is_fake(v_data)
-        isopp, oppscores = is_opposite(v_data)
-        if isfake or isopp:
-            context = 1
-        else:
-            context = 0
+    if os.getenv("COSMOS_WORD_DISABLE") is None and \
+        (textual_sim > 0.5 and (is_fake(v_data)[0] or is_opposite(v_data)[0])):
+        context = 1
     else:
         if bbox_overlap:
             # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
@@ -152,14 +143,14 @@ def evaluate_context_with_bbox_overlap(v_data):
         else:
             # Check for captions with same context : Different grounding (Not out of context)
             context = 0
-    return iou, scores_c1, scores_c2, context, fakescores, oppscores
+    return iou, scores_c1, scores_c2, context
 
-def logger(state, v_data, iou, bbox_scores, fake_scores, opp_scores):
+def logger(state, v_data, iou, bbox_scores):
     level = os.getenv("COSMOS_COMPARE_LEVEL")
-    level = 0 if level is None else level
+    level = 0 if level is None else int(level)
 
     if level == 0:
-        print(state, v_data["img_local_path"], "fake_scores:", fake_scores, "opp_scores:", opp_scores)
+        print(state, v_data["img_local_path"])
     elif level == 1:
         print(state, \
                 v_data["img_local_path"], \
@@ -187,19 +178,19 @@ if __name__ == "__main__":
     for i, v_data in enumerate(test_samples):
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
-        iou, _, _, pred_context, fakescores, oppscores = evaluate_context_with_bbox_overlap(v_data)
+        iou, _, _, pred_context = evaluate_context_with_bbox_overlap(v_data)
 
         if compare_flag:
             pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
 
             if pred_context == actual_context and pred_context_original == actual_context:
-                logger("BOTH CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
+                logger("BOTH CORRECT", v_data, iou, bbox_scores)
             elif pred_context != actual_context and pred_context_original == actual_context:
-                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
+                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores)
             elif pred_context == actual_context and pred_context_original != actual_context:
-                logger("OURS CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
+                logger("OURS CORRECT", v_data, iou, bbox_scores)
             else:
-                logger("BOTH FALSE", v_data, iou, bbox_scores, fakescores, oppscores)
+                logger("BOTH FALSE", v_data, iou, bbox_scores)
 
         if pred_context == actual_context:
             ours_correct += 1
