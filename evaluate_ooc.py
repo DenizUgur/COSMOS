@@ -133,7 +133,7 @@ def evaluate_context_with_bbox_overlap(v_data):
     bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
     iou = bb_intersection_over_union(top_bbox_c1, top_bbox_c2)
     if os.getenv("COSMOS_WORD_DISABLE") is None and \
-        (textual_sim > 0.5 and (is_fake(v_data)[0] or is_opposite(v_data)[0])):
+        (textual_sim > 0.0 and (is_fake(v_data)[0] or is_opposite(v_data)[0])):
         context = 1
     else:
         if bbox_overlap:
