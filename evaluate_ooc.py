@@ -148,19 +148,19 @@ def evaluate_context_with_bbox_overlap(v_data):
             context = 0
     return iou, scores_c1, scores_c2, context
 
-def logger(state, v_data, iou, bbox_scores):
+def logger(state, context, v_data, iou, bbox_scores):
     level = os.getenv("COSMOS_COMPARE_LEVEL")
     level = 0 if level is None else int(level)
 
     if level == 0:
-        print(state, v_data["img_local_path"])
+        print(state, context, v_data["img_local_path"])
     elif level == 1:
-        print(state, \
+        print(state, context, \
                 v_data["img_local_path"], \
                 "is_fake", is_fake(v_data), \
                 "is_opposite", is_opposite(v_data))
     elif level == 2:
-        print(state, \
+        print(state, context, \
                 v_data["img_local_path"], \
                 "is_fake", is_fake(v_data), \
                 "is_opposite", is_opposite(v_data), \
@@ -190,13 +190,13 @@ if __name__ == "__main__":
             pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
 
             if pred_context == actual_context and pred_context_original == actual_context:
-                logger("BOTH CORRECT", v_data, iou, bbox_scores)
+                logger("BOTH CORRECT", actual_context, v_data, iou, bbox_scores)
             elif pred_context != actual_context and pred_context_original == actual_context:
-                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores)
+                logger("ORIGINAL CORRECT", actual_context, v_data, iou, bbox_scores)
             elif pred_context == actual_context and pred_context_original != actual_context:
-                logger("OURS CORRECT", v_data, iou, bbox_scores)
+                logger("OURS CORRECT", actual_context, v_data, iou, bbox_scores)
             else:
-                logger("BOTH FALSE", v_data, iou, bbox_scores)
+                logger("BOTH FALSE", actual_context, v_data, iou, bbox_scores)
 
         if pred_context == actual_context:
             ours_correct += 1
