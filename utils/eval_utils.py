@@ -30,12 +30,12 @@ def process_text_embedding(text_match, text_diff):
 
 def is_fake(v_data):
     if os.getenv("COSMOS_DISABLE_ISFAKE") is not None:
-        return False
+        return False, []
 
     sen = [
-        "this news is fake.",
-        v_data["caption1_modified"],
-        v_data["caption2_modified"]
+        "fake, hoax, fabrication, supposedly, falsification, propaganda, deflection, deception, contradicted, defamation, lie, misleading, deceive, fraud, concocted, bluffing, made up, double meaning, alternative facts, trick, half-truth, untruth, falsehoods, inaccurate, disinformation, misconception",
+        v_data["caption1"],
+        v_data["caption2"]
     ]
 
     #* Encoding
@@ -45,22 +45,28 @@ def is_fake(v_data):
         sentence_embeddings[1:]
     )[0]
 
-    return any(c > 0.1 for c in cs)
+    if cs[0] < 0:
+       cs[0] = 0.0001
+    if cs[1] < 0:
+       cs[1] = 0.0001
+    #return any(c > 0.1 for c in cs), cs
+    #return (cs[0] > 0.15 or cs[1] > 0.15) and (abs(cs[0] / cs[1]) > 3 or abs(cs[0] / cs[1]) < 0.33), cs
+    return (cs[0] < 0.1 and cs[1] > 0.15) or (cs[1] < 0.1 and cs[0] > 0.15), cs
 
 def is_opposite(v_data):
     if os.getenv("COSMOS_DISABLE_ISOPPOSITE") is not None:
-        return False
+        return False, []
 
     sen1 = [
-        v_data["caption1_modified"] + " was true",
-        v_data["caption1_modified"],
-        v_data["caption2_modified"]
+        v_data["caption1"] + " was true",
+        v_data["caption1"],
+        v_data["caption2"]
     ]
 
     sen2 = [
-        v_data["caption1_modified"] + " was not true",
-        v_data["caption1_modified"],
-        v_data["caption2_modified"]
+        v_data["caption1"] + " was not true",
+        v_data["caption1"],
+        v_data["caption2"]
     ]
 
     #* Encoding
@@ -76,7 +82,10 @@ def is_opposite(v_data):
         sentence_embeddings[1:]
     )[0]
 
-    return (cs1[0] > cs2[0] and cs1[1] < cs2[1]) or (cs1[0] < cs2[0] and cs1[1] > cs2[1])
+    #cs1: scores wrt third caption in section 2.1
+    #cs2: scores wrt fourth caption in section 2.1
+
+    return (cs1[0] > cs2[0] and cs1[1] < cs2[1] - 0.01) or (cs1[0] < cs2[0] and cs1[1] > cs2[1] + 0.01), [*cs1, *cs2]
 
 def compute_score(z_img, z_text_match, z_text_diff):
     """

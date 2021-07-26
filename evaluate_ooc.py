@@ -96,7 +96,7 @@ def evaluate_context_with_bbox_overlap_original(v_data):
 
     top_bbox_c1, sorted_bbox_c1_scores = top_bbox_from_scores_original(bboxes, score_c1)
     top_bbox_c2, sorted_bbox_c2_scores = top_bbox_from_scores_original(bboxes, score_c2)
-    bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
+    bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, 0.5)
     if bbox_overlap:
         # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
         if textual_sim >= textual_sim_threshold:
@@ -129,10 +129,18 @@ def evaluate_context_with_bbox_overlap(v_data):
     bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
     bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
     iou = bb_intersection_over_union(top_bbox_c1, top_bbox_c2)
-    
-    if os.getenv("COSMOS_WORD_DISABLE") is None and \
-        (textual_sim > 0.5 and (is_fake(v_data) or is_opposite(v_data))):
-        context = 1
+    fakescores = []
+    oppscores = []
+    #if os.getenv("COSMOS_WORD_DISABLE") is None and \
+    #    (textual_sim > 0.5 and (is_fake(v_data) or is_opposite(v_data))):
+    #    context = 1
+    if os.getenv("COSMOS_WORD_DISABLE") is None and textual_sim > textual_sim_threshold:
+        isfake, fakescores = is_fake(v_data)
+        isopp, oppscores = is_opposite(v_data)
+        if isfake or isopp:
+            context = 1
+        else:
+            context = 0
     else:
         if bbox_overlap:
             # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
@@ -144,14 +152,14 @@ def evaluate_context_with_bbox_overlap(v_data):
         else:
             # Check for captions with same context : Different grounding (Not out of context)
             context = 0
-    return iou, scores_c1, scores_c2, context
+    return iou, scores_c1, scores_c2, context, fakescores, oppscores
 
-def logger(state, v_data, iou, bbox_scores):
+def logger(state, v_data, iou, bbox_scores, fake_scores, opp_scores):
     level = os.getenv("COSMOS_COMPARE_LEVEL")
     level = 0 if level is None else level
 
     if level == 0:
-        print(state, v_data["img_local_path"])
+        print(state, v_data["img_local_path"], "fake_scores:", fake_scores, "opp_scores:", opp_scores)
     elif level == 1:
         print(state, \
                 v_data["img_local_path"], \
@@ -179,19 +187,19 @@ if __name__ == "__main__":
     for i, v_data in enumerate(test_samples):
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
-        iou, _, _, pred_context = evaluate_context_with_bbox_overlap(v_data)
+        iou, _, _, pred_context, fakescores, oppscores = evaluate_context_with_bbox_overlap(v_data)
 
         if compare_flag:
             pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
 
             if pred_context == actual_context and pred_context_original == actual_context:
-                logger("BOTH CORRECT", v_data, iou, bbox_scores)
+                logger("BOTH CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
             elif pred_context != actual_context and pred_context_original == actual_context:
-                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores)
+                logger("ORIGINAL CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
             elif pred_context == actual_context and pred_context_original != actual_context:
-                logger("OURS CORRECT", v_data, iou, bbox_scores)
+                logger("OURS CORRECT", v_data, iou, bbox_scores, fakescores, oppscores)
             else:
-                logger("BOTH FALSE", v_data, iou, bbox_scores)
+                logger("BOTH FALSE", v_data, iou, bbox_scores, fakescores, oppscores)
 
         if pred_context == actual_context:
             ours_correct += 1
@@ -199,5 +207,5 @@ if __name__ == "__main__":
         if language_context == actual_context:
             lang_correct += 1
 
-    print("Cosmos Accuracy", ours_correct / len(test_samples))
+    print("Cosmos on Steroids Accuracy", ours_correct / len(test_samples))
     print("Language Baseline Accuracy", lang_correct / len(test_samples))
