@@ -228,7 +228,7 @@ def top_bbox_from_scores(bboxes, scores):
     matched_bbox = sorted_bbox_scores[0][0]
     matched_bbox_next = sorted_bbox_scores[1][0]
     if abs(sorted_bbox_scores[0][1] - sorted_bbox_scores[1][1]) / abs(sorted_bbox_scores[0][1]) < 0.01 \
-            and os.getenv("COSMOS_RECT_OPTIM"):
+            and os.getenv("COSMOS_DISABLE_RECT_OPTIM") is None:
         matched_bbox = [0,0,0,0]
         matched_bbox[0] = min(sorted_bbox_scores[0][0][0], sorted_bbox_scores[1][0][0])
         matched_bbox[1] = min(sorted_bbox_scores[0][0][1], sorted_bbox_scores[1][0][1])
@@ -236,7 +236,7 @@ def top_bbox_from_scores(bboxes, scores):
         matched_bbox[3] = max(sorted_bbox_scores[0][0][3], sorted_bbox_scores[1][0][3])
     else:
         matched_bbox = sorted_bbox_scores[0][0]
-        
+
     return matched_bbox, matched_bbox_next
 
 def top_scores(scores):
