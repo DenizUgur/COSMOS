@@ -2,6 +2,7 @@
 
 import cv2
 import os
+from timeit import default_timer as dt
 from utils.config import *
 from utils.text_utils import get_text_metadata
 from model_archs.models import CombinedModelMaskRCNN
@@ -174,11 +175,14 @@ if __name__ == "__main__":
     ours_correct = 0
     lang_correct = 0
     compare_flag = os.getenv("COSMOS_COMPARE") is not None
+    duration = 0
 
     for i, v_data in enumerate(test_samples):
+        start = dt()
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
         iou, _, _, pred_context = evaluate_context_with_bbox_overlap(v_data)
+        duration += dt() - start
 
         if compare_flag:
             pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
@@ -199,4 +203,5 @@ if __name__ == "__main__":
             lang_correct += 1
 
     print("Cosmos on Steroids Accuracy", ours_correct / len(test_samples))
+    print("Cosmos on Steroids Inference Latency", duration / len(test_samples))
     print("Language Baseline Accuracy", lang_correct / len(test_samples))
