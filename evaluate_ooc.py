@@ -70,7 +70,7 @@ def get_scores(v_data):
         z_img, z_t_c1, z_t_c2 = combined_model(img_tensor, embed_c1, embed_c2, 1, [embed_c1.shape[1]],
                                                [embed_c2.shape[1]], bboxes, bbox_classes)
 
-    z_img = z_img.permute(1, 0, 2)
+    #z_img = z_img.permute(1, 0, 2)
     z_text_c1 = z_t_c1.unsqueeze(2)
     z_text_c2 = z_t_c2.unsqueeze(2)
 
@@ -90,24 +90,11 @@ def evaluate_context_with_bbox_overlap_original(v_data):
         Returns:
             context_label (int): Returns 0 if its same/similar context and 1 if out-of-context
     """
-    bboxes = v_data['maskrcnn_bboxes']
     score_c1, score_c2 = get_scores(v_data)
     textual_sim = float(v_data['bert_base_score'])
-
-    top_bbox_c1, sorted_bbox_c1_scores = top_bbox_from_scores_original(bboxes, score_c1)
-    top_bbox_c2, sorted_bbox_c2_scores = top_bbox_from_scores_original(bboxes, score_c2)
-    bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
-    if bbox_overlap:
-        # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
-        if textual_sim >= textual_sim_threshold:
-            context = 0
-        # Check for captions with different context : Same grounding with low textual overlap (Out of context)
-        else:
-            context = 1
-        return context, (sorted_bbox_c1_scores, sorted_bbox_c2_scores)
-    else:
-        # Check for captions with same context : Different grounding (Not out of context)
-        return 0, (sorted_bbox_c1_scores, sorted_bbox_c2_scores)
+    if abs((score_c1 - score_c2) / max(score_c1, score_c2)) > 0.1 and textual_sim < textual_sim_threshold:
+       return 1
+    return 0
 
 def evaluate_context_with_bbox_overlap(v_data):
     """
@@ -119,18 +106,10 @@ def evaluate_context_with_bbox_overlap(v_data):
         Returns:
             context_label (int): Returns 0 if its same/similar context and 1 if out-of-context
     """
-    bboxes = v_data['maskrcnn_bboxes']
     score_c1, score_c2 = get_scores(v_data)
     textual_sim = float(v_data['bert_base_score'])
-    scores_c1 = top_scores(score_c1)
-    scores_c2 = top_scores(score_c2)
-    top_bbox_c1, top_bbox_next_c1 = top_bbox_from_scores(bboxes, score_c1)
-    top_bbox_c2, top_bbox_next_c2 = top_bbox_from_scores(bboxes, score_c2)
-    bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
-    bbox_overlap_next = is_bbox_overlap(top_bbox_next_c1, top_bbox_next_c2, iou_overlap_threshold)
-    iou = bb_intersection_over_union(top_bbox_c1, top_bbox_c2)
     captions = v_data['caption1'] + v_data['caption2']
-    
+
     if os.getenv("COSMOS_WORD_DISABLE") is None and (textual_sim >= textual_sim_threshold and (captions.find("hoax") != -1 or \
        captions.find("fake") != -1 or captions.find("claim") != -1 or captions.find("actual") != -1 or \
        captions.find("genuine") != -1 or captions.find("fabric") != -1 or captions.find("erroneous") != -1 or \
@@ -139,20 +118,12 @@ def evaluate_context_with_bbox_overlap(v_data):
        (v_data['caption1'].find("not") == -1 and v_data['caption2'].find("not") != -1))):
         context = 1
     else:
-        #if bbox_overlap and (os.getenv("COSMOS_RECT_OPTIM") is None or \
-        #   (top_bbox_c1[0] != 0 or top_bbox_c1[1] != 0 or float(scores_c1[0]) - float(scores_c1[1])) / abs(float(scores_c1[0])) > 0.1 or \
-        #   (top_bbox_c2[0] != 0 or top_bbox_c2[1] != 0 or float(scores_c2[0]) - float(scores_c2[1])) / abs(float(scores_c2[0])) > 0.1 or bbox_overlap_next):
-        if bbox_overlap:
-            # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
-            if textual_sim >= textual_sim_threshold:
-                context = 0
-            # Check for captions with different context : Same grounding with low textual overlap (Out of context)
-            else:
-                context = 1
+        if abs((score_c1 - score_c2) / max(score_c1, score_c2)) > 0.1 and textual_sim < textual_sim_threshold:
+            context = 1
         else:
-            # Check for captions with same context : Different grounding (Not out of context)
             context = 0
-    return iou, scores_c1, scores_c2, context
+
+    return context
 
 if __name__ == "__main__":
     """ Main function to compute out-of-context detection accuracy"""
@@ -165,43 +136,27 @@ if __name__ == "__main__":
     for i, v_data in enumerate(test_samples):
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
-        iou, _, _, pred_context = evaluate_context_with_bbox_overlap(v_data)
+        pred_context = evaluate_context_with_bbox_overlap(v_data)
 
         if compare_flag:
-            pred_context_original, bbox_scores = evaluate_context_with_bbox_overlap_original(v_data)
+            pred_context_original = evaluate_context_with_bbox_overlap_original(v_data)
 
             if pred_context == actual_context and pred_context_original == actual_context:
                 print("BOTH CORRECT", \
                     v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                    "bert", float(v_data['bert_base_score']))
             elif pred_context != actual_context and pred_context_original == actual_context:
                 print("ORIGINAL CORRECT", \
                     v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                    "bert", float(v_data['bert_base_score']))
             elif pred_context == actual_context and pred_context_original != actual_context:
                 print("OURS CORRECT", \
                     v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                    "bert", float(v_data['bert_base_score']))
             else:
                 print("BOTH FALSE", \
                     v_data["img_local_path"], \
-                    "bert", float(v_data['bert_base_score']), \
-                    "iou", iou, \
-                    "bbox", v_data['maskrcnn_bboxes'], \
-                    "bbox_scores_c1", bbox_scores[0], \
-                    "bbox_scores_c2", bbox_scores[1])
+                    "bert", float(v_data['bert_base_score']))
 
         if pred_context == actual_context:
             ours_correct += 1
