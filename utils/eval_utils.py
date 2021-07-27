@@ -84,8 +84,8 @@ def is_opposite(v_data):
         sentence_embeddings[1:]
     )[0]
 
-    #cs1: scores wrt third caption in section 2.1
-    #cs2: scores wrt fourth caption in section 2.1
+    #cs1: scores wrt the positive probe in section 2.1
+    #cs2: scores wrt the negative probe in section 2.1
 
     return (cs1[0] > cs2[0] and cs1[1] < cs2[1] - 0.01) or (cs1[0] < cs2[0] and cs1[1] > cs2[1] + 0.01), [*cs1, *cs2]
 
