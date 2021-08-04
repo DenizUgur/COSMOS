@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from transformers import *
+from utils.config import *
 import utils.sbert_wk.utils
 
 # Set model
