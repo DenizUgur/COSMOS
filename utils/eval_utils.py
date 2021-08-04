@@ -3,8 +3,14 @@
 """
 import os
 import torch
-from utils.sbert_wk.similarity import similarity_wrapper
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+#from utils.sbert_wk.similarity import similarity_wrapper
 from utils.config import margin_rank_loss, device, scoring, embed_type, use_embed
+
+sen_model = SentenceTransformer('stsb-mpnet-base-v2')
+
+print("Total SBERT Params", sum(p.numel() for p in sen_model.parameters() if p.requires_grad))
 
 def process_text_embedding(text_match, text_diff):
     """
@@ -36,7 +42,12 @@ def is_fake(v_data):
     ]
 
     #* Encoding
-    cs = similarity_wrapper(sen)
+    #cs = similarity_wrapper(sen)
+    sentence_embeddings = sen_model.encode(sen)
+    cs = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]    
 
     if cs[0] < 0:
        cs[0] = 0.0001
@@ -63,8 +74,20 @@ def is_opposite(v_data):
     ]
 
     #* Encoding
-    cs1 = similarity_wrapper(sen1)
-    cs2 = similarity_wrapper(sen2)
+    #cs1 = similarity_wrapper(sen1)
+    #cs2 = similarity_wrapper(sen2)
+    
+    sentence_embeddings = sen_model.encode(sen1)
+    cs1 = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]
+
+    sentence_embeddings = sen_model.encode(sen2)
+    cs2 = cosine_similarity(
+        [sentence_embeddings[0]],
+        sentence_embeddings[1:]
+    )[0]    
 
     #cs1: scores wrt the positive probe in section 2.1
     #cs2: scores wrt the negative probe in section 2.1
