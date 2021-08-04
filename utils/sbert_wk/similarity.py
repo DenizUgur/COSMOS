@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from transformers import *
 from utils.config import *
-import utils.sbert_wk.utils
+import utils.sbert_wk.utils as ut
 
 # Set model
 config = AutoConfig.from_pretrained("binwang/bert-base-nli-stsb", cache_dir="./cache")
@@ -61,7 +61,7 @@ def get_similarity(sentences):
     # of (num_hidden_states, seq_len, hidden_dim) for each element in the batch.
     all_layer_embedding = torch.stack(features).permute(1, 0, 2, 3).cpu().numpy()
 
-    embed_method = utils.generate_embedding(params["embed_method"], features_mask)
+    embed_method = ut.generate_embedding(params["embed_method"], features_mask)
     embedding = embed_method.embed(params, all_layer_embedding)
 
     return (
