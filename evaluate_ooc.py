@@ -172,6 +172,9 @@ def logger(state, context, v_data, iou, bbox_scores):
 
 if __name__ == "__main__":
     """ Main function to compute out-of-context detection accuracy"""
+    
+    if (not torch.cuda.is_avaliable()):
+        print("A GPU is required for the model to run")
 
     test_samples = read_json_data(os.path.join(DATA_DIR, 'annotations', 'test_data.json'))
     ours_correct = 0
