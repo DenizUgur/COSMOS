@@ -232,18 +232,18 @@ These variables modify the behaviour of our evaluation method
 **If you find our dataset or paper useful for your research , please include the following citation:**
 
 ```
-@misc{aneja2021cosmos,
-      title={COSMOS: Catching Out-of-Context Misinformation with Self-Supervised Learning}, 
-      author={Shivangi Aneja and Chris Bregler and Matthias Nießner},
-      year={2021},
-      eprint={2101.06278},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@inproceedings{10.1145/3458305.3479968,
+	author = {Akgul, Tankut and Civelek, Tugce Erkilic and Ugur, Deniz and Begen, Ali C.},
+	title = {COSMOS on Steroids: A Cheap Detector for Cheapfakes},
+	year = {2021},
+	isbn = {9781450384346},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3458305.3479968},
+	doi = {10.1145/3458305.3479968},
+	numpages = {5},
+	keywords = {RNN, fake, SBERT, BERT, differential sensing, IoU, Cheapfakes},
+	location = {Istanbul, Turkey},
+	series = {MMSys '21}
 }
 ```
-
-</br>
-
- Contact Us
-
-If you have questions regarding the dataset or code, please email us at shivangi.aneja@tum.de. We will get back to you as soon as possible.
